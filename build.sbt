@@ -31,5 +31,6 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/maven-releases/"
 resolvers += "Typesafe Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 resolvers += "slick repo" at "https://mvnrepository.com/artifact/com.typesafe.play/play-slick_2.11"
+resolvers += "mvnrepository.com" at "https://mvnrepository.com/artifact"
 
 

@@ -16,8 +16,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
 
     def queryNamedView(implicit session: Session, name: String) : String = {
         val numberFromView = StaticQuery[Int, TotalNumber] + "select sum from " + name + " limit ?"
-        val retJObj = Json.obj("count" -> numberFromView(1).first.statNumber)
-        retJObj.toString
+        Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromView(1).first.statNumber)))
     }
 
 }
