@@ -17,7 +17,7 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     }
 
     def daoGetInteractions(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_interaction")}
+        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_interactions")}
     }
 
     def daoGetTotalReach(projID: Long) : String = {
@@ -25,7 +25,7 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     }
 
     def daoGetTotalReachByGender(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_reach_by_gender")}
+        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_reach_page_posts")}
     }
 
     def daoGetTotalFollowers(projID: Long) : String = {
@@ -40,11 +40,15 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
         Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "avg_time_viewed")}
     }
 
-    def daoGetTotalVideoViewDateRange(projID: Long, start: String, stop: String) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_video_view_date_range")}
+    def daoGetTotalTimeViewed(projID: Long) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_time_viewed")}
     }
 
-    def daoGetTotalVideoViewTypeDateRange(projID: Long, start: String, stop: String) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryNamedView(session, "total_video_view_types_date_range")}
+    def daoGetTotalVideoViewsDateRange(projID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryVideoViewsDateRange(session, start, stop)}
+    }
+
+    def daoGetTotalVideoViewTypesDateRange(projID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryVideoViewTypesDateRange(session, start, stop)}
     }
 }

@@ -35,8 +35,8 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     def getTotalTimeViewed(id : Long) = Action {
         Ok(pStats.totalTimeViewed(id))
     }
-    def getVideoViewDateRange(id : Long, start : String, stop : String) = Action {
-        Ok(pStats.videoViewDateRange(id, start, stop))
+    def getVideoViewsDateRange(id : Long, start : String, stop : String) = Action {
+        Ok(pStats.videoViewsDateRange(id, start, stop))
     }
     def getVideoViewTypesDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.videoViewTypesDateRange(id, start, stop))

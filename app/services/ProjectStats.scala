@@ -18,7 +18,7 @@ trait ProjectStats {
     def posts(projectID : Long) : String
     def averageTimeViewed(projectID : Long) : String
     def totalTimeViewed(projectID : Long) : String
-    def videoViewDateRange(id : Long, start : String, stop : String) : String
+    def videoViewsDateRange(id : Long, start : String, stop : String) : String
     def videoViewTypesDateRange(id : Long, start : String, stop : String) : String
 }
 
@@ -51,12 +51,12 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
         theDAL.daoGetAvgTimeViewed(projectID)
     }
     def totalTimeViewed(projectID : Long) : String = {
-        theDAL.daoGetAvgTimeViewed(projectID)
+        theDAL.daoGetTotalTimeViewed(projectID)
     }
-    def videoViewDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetTotalVideoViewDateRange(projectID, start, stop)
+    def videoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetTotalVideoViewsDateRange(projectID, start, stop)
     }
     def videoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetTotalVideoViewTypeDateRange(projectID, start, stop)
+        theDAL.daoGetTotalVideoViewTypesDateRange(projectID, start, stop)
     }
 }

@@ -12,4 +12,7 @@ trait RedshiftTransfer { this: PlainSqlRedshift =>
 
     case class TotalNumber(statNumber: Long)
     implicit val getTotalNumberResult = GetResult(r => TotalNumber(r.<<))
+
+    case class KeyValuePair(k: String, v: Long)
+    implicit val getKeyValueResult = GetResult(r => KeyValuePair(r.<<, r.<<))
 }

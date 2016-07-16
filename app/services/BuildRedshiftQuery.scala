@@ -14,9 +14,37 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
         }
     }
 
-    def queryNamedView(implicit session: Session, name: String) : String = {
-        val numberFromView = StaticQuery[Int, TotalNumber] + "select sum from " + name + " limit ?"
+    def queryNamedView(implicit session: Session, view_name: String, postClause: String = "") : String = {
+        val numberFromView = StaticQuery[Int, TotalNumber] + "select sum from " + view_name + " " + postClause + " limit ?"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromView(1).first.statNumber)))
+    }
+
+    def queryVideoViewsDateRange(implicit session: Session, start: String, stop: String) : String = {
+        val numberFromQuery = StaticQuery[Unit, TotalNumber] +
+            "SELECT SUM(value) FROM fb_insights WHERE title = 'Daily Total Video Views' AND end_time > '" + start + "' and end_time < '" + stop + "'"
+        Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery(1).first.statNumber)))
+    }
+
+    def queryVideoViewTypesDateRange(implicit session: Session, start: String, stop: String) : String = {
+
+        var jTmp : JsArray = new JsArray()
+
+        val numberFromQuery = StaticQuery.queryNA[KeyValuePair](
+            "SELECT 'Total Promoted Views' AS name, SUM(value) AS sum FROM fb_insights WHERE title LIKE 'Daily Total Promoted Views' AND end_time < '" + stop + "' AND end_time > '" + start + "' UNION " +
+            "SELECT 'Total Organic Views' AS name, SUM(value) AS sum FROM fb_insights WHERE title LIKE 'Daily Total Organic Views' AND end_time < '" + stop + "' AND end_time > '" + start + "';")
+
+        var sb: StringBuilder = new StringBuilder("[")
+
+        numberFromQuery foreach { c =>
+            println("* " + c.k + "\t" + c.v)
+            sb.append(JsObject(Seq("name" -> JsString(c.k), "count" -> JsNumber(c.v))))
+            sb.append(",")
+        }
+        sb.delete(sb.length-1, sb.length)
+        sb.append("]")
+        //Json.prettyPrint(Json.arr(Json.obj("name" -> numberFromQuery().first.k, "count" -> numberFromQuery().first.v)))
+        //sb.toString()
+        Json.prettyPrint(Json.parse(sb.toString()))
     }
 
 }

@@ -17,6 +17,6 @@ GET     /reach/:id                                      controllers.ProjectStats
 GET     /posts/:id                                      controllers.ProjectStatsController.getTotalPosts(id: Long)
 GET     /avg-time-viewed/:id                            controllers.ProjectStatsController.getAverageTimeViewed(id: Long)
 GET     /total-time-viewed/:id                          controllers.ProjectStatsController.getTotalTimeViewed(id: Long)
-GET     /video-views-date-range/:id/*start/*stop        controllers.ProjectStatsController.getVideoViewDateRange(id: Long, start: String, stop: String)
+GET     /video-views-date-range/:id/*start/*stop        controllers.ProjectStatsController.getVideoViewsDateRange(id: Long, start: String, stop: String)
 GET     /video-view-types-date-range/:id/*start/*stop   controllers.ProjectStatsController.getVideoViewTypesDateRange(id: Long, start: String, stop: String)
 
