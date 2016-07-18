@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   testplus
 )
 
-libraryDependencies ++= Seq(slick, slf4j, h2, redshift)
+libraryDependencies ++= Seq(slick, slf4j, h2, redshift, filters)
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/maven-releases/"

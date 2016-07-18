@@ -20,9 +20,9 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
 
     def queryVideoViewsDateRange(implicit session: Session, start: String, stop: String) : String = {
-        val numberFromQuery = StaticQuery[Unit, TotalNumber] +
+        val numberFromQuery = StaticQuery[TotalNumber] +
             "SELECT SUM(value) FROM fb_insights WHERE title = 'Daily Total Video Views' AND end_time > '" + start + "' and end_time < '" + stop + "'"
-        Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery(1).first.statNumber)))
+        Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
 
     def queryVideoViewTypesDateRange(implicit session: Session, start: String, stop: String) : String = {
