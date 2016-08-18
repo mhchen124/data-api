@@ -166,43 +166,81 @@ drop view total_video_impressions;
 CREATE VIEW total_video_impressions AS
 select 'total_video_impressions' as name, SUM(CONVERT(int, value)) AS sum from fb_insights where title like 'Lifetime Video Total Impressions';
 
+
 -- ##############################
 -- ########### Data API 2.0 tasks
 -- ##############################
 
--- ## Total Reach (same as 1.0)
+-- ## Total Reach
 CREATE VIEW total_reach AS
-SELECT 'total_reach' AS name,sum(value) FROM fb_insights WHERE title = 'Daily Total Reach';
+SELECT 'daily_aggr_total_reach' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title = 'Daily Total Reach';
+SELECT 'lifetime_video_total_reach' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Video Total Reach' AND sys_time > (CURRENT_DATE-1);
 
--- ## Video reach (lifetime measure)
--- SELECT * FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LI 'Lifetime Video Total Reach';
-
--- ## Total Video Views (same as 1.0)
+-- ## Total Video Views
 CREATE VIEW total_video_views AS
-SELECT 'total_video_views' AS name, SUM(CONVERT(int, value)) AS sum FROM fb_insights WHERE title LIKE 'Lifetime Total Video Views';
+SELECT 'daily_aggr_total_video_views' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views';
+SELECT 'lifetime_total_video_views' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Total Video Views' AND sys_time > (CURRENT_DATE-1);
 
--- ## Total Unique Views (same as 1.0)
+-- ## Total Unique Views
 CREATE VIEW total_unique_video_views AS
-SELECT 'total_unique_video_views' AS name, SUM(CONVERT(int, value)) AS sum FROM fb_insights WHERE title LIKE 'Lifetime Unique Video Views';
+SELECT 'daily_aggr_total_unique_video_views' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Unique Video Views%';
+SELECT 'lifetime_total_unique_video_views' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Unique Video Views' AND sys_time > (CURRENT_DATE-1);
 
--- ## Treading section data (TBD)
+-- ## Treading section data
 
 -- ## Total Followers
 CREATE VIEW total_followers AS
-SELECT 'total_followers' AS name, SUM(value) FROM fb_insights WHERE title LIKE 'Daily total post like reactions of a page';
+SELECT 'daily_aggr_total_followers' AS name, SUM(value) AS sum FROM fb_insights WHERE title LIKE '%Daily total post like reactions of a page%';
 
--- ## Top 10 heat map data 
--- SELECT id, SUM(CONVERT(int,value)) FROM fb_insights WHERE stats_type = 'VideoInsights' AND title = 'Lifetime Unique 10-Second Views' ORDER BY CONVERT(int,value) DESC LIMIT 10;
+-- ## Total Interactions
 
--- ## Usage: Video Views
--- select * from fb_insights where stats_type = 'VideoInsights' and title like 'Lifetime Total Video Views' order by convert(int,value) desc limit 10;
+CREATE VIEW total_reactions AS
+SELECT 'total reactions' AS name,
+  SUM( CONVERT(int, json_extract_path_text(value, 'love')) +
+    CONVERT(int, json_extract_path_text(value, 'haha')) +
+    CONVERT(int, json_extract_path_text(value, 'like')) +
+    CONVERT(int, json_extract_path_text(value, 'sorry')) +
+    CONVERT(int, json_extract_path_text(value, 'anger')) +
+    CONVERT(int, json_extract_path_text(value, 'wow')) ) AS sum
+FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Reactions by type') AND sys_time > (CURRENT_DATE-1);
+
+CREATE VIEW total_share_comments AS
+SELECT 'total share and comments' AS name,
+  SUM(
+    nullif(json_extract_path_text(value, 'share'), ' ')::int +
+    nullif(json_extract_path_text(value, 'comment'), ' ')::int )
+  AS sum
+FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Video Stories by action type') AND sys_time > (CURRENT_DATE-1);
+
+CREATE VIEW total_actions AS
+SELECT 'total_actions' AS name, ((SELECT sum FROM total_reactions) + (SELECT sum FROM total_share_comments)) AS sum;
+
+-- ## Top 10 heat map data (by 10-sec views)
+CREATE VIEW top10_heatmap AS
+SELECT id, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE '%Unique 10-Second Views%' AND sys_time < CURRENT_DATE and sys_time > CURRENT_DATE-8 AND id IN
+  (SELECT id FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE '%Unique 10-Second Views%' AND sys_time < CURRENT_DATE AND sys_time > CURRENT_DATE-8 GROUP BY id ORDER BY SUM(value) DESC LIMIT 10)
+  ORDER BY id;
+
+-- ## Usage: Video Views by day for a video over a date range
+SELECT id, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Total Video Views' AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
+
+-- ## Usage: Video Views by day by type for a video over a date range
+SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE 'Daily Organic Video Views' OR title LIKE 'Daily Paid Video Views') AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
+
+-- ## Usage: Video reach by day for a video over a date range
+SELECT id, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
 
 -- ## Video retention
--- select * from fb_insights where stats_type = 'VideoInsights' and title like 'Lifetime Percentage of viewers at each interval (Video )'; 
+SELECT id, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-1) AND id LIKE '2054005264823683%';
 
 -- ## Video stats view
 -- Same as above retention, use that data
 
+-- ## Usage: Video Total Actions by day by type for a video over a date range
+<<>>
+
+-- ## Usage: Video Total Reactions by day by type for a video over a date range
+<<>>
 
 
 DROP VIEW union_numbers;

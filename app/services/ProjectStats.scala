@@ -11,6 +11,7 @@ import play.api.mvc._
 trait ProjectStats {
     def testdb() : String
     def totalVideoViews(projectID : Long) : String
+    def totalUniqueVideoViews(projectID : Long) : String
     def interactions(projectID : Long) : String
     def gender(projectID : Long) : String
     def followers(projectID : Long) : String
@@ -20,6 +21,7 @@ trait ProjectStats {
     def totalTimeViewed(projectID : Long) : String
     def videoViewsDateRange(id : Long, start : String, stop : String) : String
     def videoViewTypesDateRange(id : Long, start : String, stop : String) : String
+    def videoTop10Heatmap(projectID : Long) : String
 }
 
 /**
@@ -31,6 +33,9 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     }
     def totalVideoViews(projectID : Long) : String = {
         theDAL.daoGetTotalVideoViews(projectID)
+    }
+    def totalUniqueVideoViews(projectID : Long) : String = {
+        theDAL.daoGetTotalUniqueVideoViews(projectID)
     }
     def interactions(projectID : Long) : String = {
         theDAL.daoGetInteractions(projectID)
@@ -58,5 +63,8 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     }
     def videoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetTotalVideoViewTypesDateRange(projectID, start, stop)
+    }
+    def videoTop10Heatmap(projectID : Long) : String = {
+        theDAL.daoGetTop10Heatmap(projectID)
     }
 }

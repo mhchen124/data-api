@@ -14,6 +14,9 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     def getTotalVideoViews(id : Long) = Action {
         Ok(pStats.totalVideoViews(id))
     }
+    def getTotalUniqueVideoViews(id : Long) = Action {
+        Ok(pStats.totalUniqueVideoViews(id))
+    }
     def getTotalInteractions(id : Long) = Action {
         Ok(pStats.interactions(id))
     }
@@ -40,5 +43,8 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     }
     def getVideoViewTypesDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.videoViewTypesDateRange(id, start, stop))
+    }
+    def getTop10Heatmap(id : Long) = Action {
+        Ok(pStats.videoTop10Heatmap(id))
     }
 }

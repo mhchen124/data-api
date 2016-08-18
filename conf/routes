@@ -10,6 +10,7 @@ GET     /assets/*file                                   controllers.Assets.versi
 
 # GPS data API routes
 GET     /video-views-total/:id                          controllers.ProjectStatsController.getTotalVideoViews(id: Long)
+GET     /video-views-total-unique/:id                   controllers.ProjectStatsController.getTotalUniqueVideoViews(id: Long)
 GET     /interactions/:id                               controllers.ProjectStatsController.getTotalInteractions(id: Long)
 GET     /gender/:id                                     controllers.ProjectStatsController.getTotalByGender(id: Long)
 GET     /followers/:id                                  controllers.ProjectStatsController.getTotalFollowers(id: Long)
@@ -19,4 +20,5 @@ GET     /avg-time-viewed/:id                            controllers.ProjectStats
 GET     /total-time-viewed/:id                          controllers.ProjectStatsController.getTotalTimeViewed(id: Long)
 GET     /video-views-date-range/:id/*start/*stop        controllers.ProjectStatsController.getVideoViewsDateRange(id: Long, start: String, stop: String)
 GET     /video-view-types-date-range/:id/*start/*stop   controllers.ProjectStatsController.getVideoViewTypesDateRange(id: Long, start: String, stop: String)
+GET     /top10-heatmap/:id                              controllers.ProjectStatsController.getTop10Heatmap(id: Long)
 

@@ -47,4 +47,8 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
         Json.prettyPrint(Json.parse(sb.toString()))
     }
 
+    def queryTop10Heatmap(implicit session: Session) : String = {
+        val heatmap = StaticQuery[IdValueTime] + "SELECT * FROM top10_heatmap"
+        Json.toJson(heatmap.list).toString()
+    }
 }
