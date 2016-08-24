@@ -3,22 +3,26 @@
 # ~~~~
 
 # Some basic controllers
-GET     /                                               controllers.HomeController.index
-GET     /testdb                                         controllers.ProjectStatsController.testdb()
+GET     /                                                       controllers.HomeController.index
+GET     /testdb                                                 controllers.ProjectStatsController.testdb()
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                                   controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                                           controllers.Assets.versioned(path="/public", file: Asset)
 
 # GPS data API routes
-GET     /video-views-total/:id                          controllers.ProjectStatsController.getTotalVideoViews(id: Long)
-GET     /video-views-total-unique/:id                   controllers.ProjectStatsController.getTotalUniqueVideoViews(id: Long)
-GET     /interactions/:id                               controllers.ProjectStatsController.getTotalInteractions(id: Long)
-GET     /gender/:id                                     controllers.ProjectStatsController.getTotalByGender(id: Long)
-GET     /followers/:id                                  controllers.ProjectStatsController.getTotalFollowers(id: Long)
-GET     /reach/:id                                      controllers.ProjectStatsController.getTotalReach(id: Long)
-GET     /posts/:id                                      controllers.ProjectStatsController.getTotalPosts(id: Long)
-GET     /avg-time-viewed/:id                            controllers.ProjectStatsController.getAverageTimeViewed(id: Long)
-GET     /total-time-viewed/:id                          controllers.ProjectStatsController.getTotalTimeViewed(id: Long)
-GET     /video-views-date-range/:id/*start/*stop        controllers.ProjectStatsController.getVideoViewsDateRange(id: Long, start: String, stop: String)
-GET     /video-view-types-date-range/:id/*start/*stop   controllers.ProjectStatsController.getVideoViewTypesDateRange(id: Long, start: String, stop: String)
-GET     /top10-heatmap/:id                              controllers.ProjectStatsController.getTop10Heatmap(id: Long)
+GET     /video-views-total/:id                                  controllers.ProjectStatsController.getTotalVideoViews(id: Long)
+GET     /video-views-total-unique/:id                           controllers.ProjectStatsController.getTotalUniqueVideoViews(id: Long)
+GET     /interactions/:id                                       controllers.ProjectStatsController.getTotalInteractions(id: Long)
+GET     /gender/:id                                             controllers.ProjectStatsController.getTotalByGender(id: Long)
+GET     /followers/:id                                          controllers.ProjectStatsController.getTotalFollowers(id: Long)
+GET     /reach/:id                                              controllers.ProjectStatsController.getTotalReach(id: Long)
+GET     /posts/:id                                              controllers.ProjectStatsController.getTotalPosts(id: Long)
+GET     /avg-time-viewed/:id                                    controllers.ProjectStatsController.getAverageTimeViewed(id: Long)
+GET     /total-time-viewed/:id                                  controllers.ProjectStatsController.getTotalTimeViewed(id: Long)
+GET     /total-video-views-date-range/:id/*start/*stop          controllers.ProjectStatsController.getTotalVideoViewsDateRange(id: Long, start: String, stop: String)
+GET     /total-video-view-types-date-range/:id/*start/*stop     controllers.ProjectStatsController.getTotalVideoViewTypesDateRange(id: Long, start: String, stop: String)
+GET     /top10-heatmap/:id                                      controllers.ProjectStatsController.getTop10Heatmap(id: Long)
+GET     /daily-video-views-date-range/:id/*start/*stop          controllers.ProjectStatsController.getDailyVideoViewsDateRange(id: Long, start: String, stop: String)
+GET     /daily-video-view-types-date-range/:id/*start/*stop     controllers.ProjectStatsController.getDailyVideoViewTypesDateRange(id: Long, start: String, stop: String)
+GET     /daily-video-reach-date-range/:id/*start/*stop          controllers.ProjectStatsController.getDailyVideoReachDateRange(id: Long, start: String, stop: String)
+GET     /video-retention/:id                                    controllers.ProjectStatsController.getVideoRetention(id: Long)
 

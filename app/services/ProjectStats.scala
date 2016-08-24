@@ -19,9 +19,13 @@ trait ProjectStats {
     def posts(projectID : Long) : String
     def averageTimeViewed(projectID : Long) : String
     def totalTimeViewed(projectID : Long) : String
-    def videoViewsDateRange(id : Long, start : String, stop : String) : String
-    def videoViewTypesDateRange(id : Long, start : String, stop : String) : String
+    def totalVideoViewsDateRange(id : Long, start : String, stop : String) : String
+    def totalVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
+    def dailyVideoViewsDateRange(id : Long, start : String, stop : String) : String
+    def dailyVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
     def videoTop10Heatmap(projectID : Long) : String
+    def dailyVideoReachDateRange(id : Long, start : String, stop : String) : String
+    def videoRetention(id : Long) : String
 }
 
 /**
@@ -58,13 +62,25 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     def totalTimeViewed(projectID : Long) : String = {
         theDAL.daoGetTotalTimeViewed(projectID)
     }
-    def videoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
+    def totalVideoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetTotalVideoViewsDateRange(projectID, start, stop)
     }
-    def videoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
+    def totalVideoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetTotalVideoViewTypesDateRange(projectID, start, stop)
+    }
+    def dailyVideoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewsDateRange(projectID, start, stop)
+    }
+    def dailyVideoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewTypesDateRange(projectID, start, stop)
     }
     def videoTop10Heatmap(projectID : Long) : String = {
         theDAL.daoGetTop10Heatmap(projectID)
+    }
+    def dailyVideoReachDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoReachDateRange(projectID, start, stop)
+    }
+    def videoRetention(id : Long) : String = {
+        theDAL.daoGetVideoRetention(id)
     }
 }

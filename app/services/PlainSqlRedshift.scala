@@ -49,13 +49,25 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     }
 
     def daoGetTotalVideoViewsDateRange(projID: Long, start: String, stop: String) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryVideoViewsDateRange(session, start, stop)}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViewsDateRange(session, start, stop)}
     }
 
     def daoGetTotalVideoViewTypesDateRange(projID: Long, start: String, stop: String) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryVideoViewTypesDateRange(session, start, stop)}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViewTypesDateRange(session, start, stop)}
+    }
+    def daoGetDailyVideoViewsDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryDailyVideoViewsDateRange(session, videoID, start, stop)}
+    }
+    def daoGetDailyVideoViewTypesDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryDailyVideoViewTypesDateRange(session, videoID, start, stop)}
     }
     def daoGetTop10Heatmap(projID: Long) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryTop10Heatmap(session)}
+    }
+    def daoGetDailyVideoReachDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryDailyVideoReachDateRange(session, videoID, start, stop)}
+    }
+    def daoGetVideoRetention(videoID: Long) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryVideoRetention(session, videoID)}
     }
 }

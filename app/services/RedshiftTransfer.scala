@@ -11,6 +11,11 @@ trait RedshiftTransfer { this: PlainSqlRedshift =>
                         title: String, name: String, value: String, proj_status: String)
     implicit val getGpsStatsResult = GetResult(r => GpsStats(r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<, r.<<))
 
+    case class IdTitleValueTime(id: String, title: String, value: String, sys_time: String)
+    implicit val getIdTitleValueTimeResult = GetResult(r => IdTitleValueTime(r.<<, r.<<, r.<<, r.<<))
+    implicit val IdTitleValueTimeReads = Json.reads[IdTitleValueTime]
+    implicit val IdTitleValueTimeWrites = Json.writes[IdTitleValueTime]
+
     case class IdValueTime(id: String, value: String, sys_time: String)
     implicit val getIdValueTimeResult = GetResult(r => IdValueTime(r.<<, r.<<, r.<<))
     implicit val IdValueTimeReads = Json.reads[IdValueTime]
