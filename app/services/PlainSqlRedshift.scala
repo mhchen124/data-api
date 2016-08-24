@@ -67,6 +67,15 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     def daoGetDailyVideoReachDateRange(videoID: Long, start: String, stop: String) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryDailyVideoReachDateRange(session, videoID, start, stop)}
     }
+    def daoGetAverageTimeViewedDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryAverageTimeViewedDateRange(session, videoID, start, stop)}
+    }
+    def daoGetDailyActionTypesDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryDailyActionTypesDateRange(session, videoID, start, stop)}
+    }
+    def daoGetDailyReactionTypesDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryDailyReactionTypesDateRange(session, videoID, start, stop)}
+    }
     def daoGetVideoRetention(videoID: Long) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryVideoRetention(session, videoID)}
     }

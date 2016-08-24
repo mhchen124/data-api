@@ -25,6 +25,9 @@ trait ProjectStats {
     def dailyVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
     def videoTop10Heatmap(projectID : Long) : String
     def dailyVideoReachDateRange(id : Long, start : String, stop : String) : String
+    def averageTimeViewedDateRange(id : Long, start : String, stop : String) : String
+    def dailyActionTypesDateRange(id : Long, start : String, stop : String) : String
+    def dailyReactionTypesDateRange(id : Long, start : String, stop : String) : String
     def videoRetention(id : Long) : String
 }
 
@@ -79,6 +82,15 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     }
     def dailyVideoReachDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetDailyVideoReachDateRange(projectID, start, stop)
+    }
+    def averageTimeViewedDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetAverageTimeViewedDateRange(projectID, start, stop)
+    }
+    def dailyActionTypesDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyActionTypesDateRange(projectID, start, stop)
+    }
+    def dailyReactionTypesDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyReactionTypesDateRange(projectID, start, stop)
     }
     def videoRetention(id : Long) : String = {
         theDAL.daoGetVideoRetention(id)

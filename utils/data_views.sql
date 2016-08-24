@@ -230,6 +230,9 @@ SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff
 -- ## Usage: Video reach by day for a video over a date range
 SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
 
+-- ## Usage: Avg View Time
+SELECT * FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Average time video viewed') AND id LIKE '2054005264823683%' order by sys_time;
+
 -- ## Video retention
 SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-1) AND id LIKE '2054005264823683%';
 
@@ -246,9 +249,12 @@ SELECT 'daily_actions' AS name
     CONVERT(int, json_extract_path_text(value, 'wow')) ) AS sum
 FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Daily Reactions by type') AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
 
+-- ## Video Actions by day by type over date range
+SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE 'Daily Video Stories by action type') AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
 
 -- ## Usage: Video Total Reactions by day by type for a video over a date range
-<<>>
+SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE 'Daily Reactions by type') AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
+
 
 
 DROP VIEW union_numbers;
