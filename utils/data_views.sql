@@ -168,7 +168,7 @@ select 'total_video_impressions' as name, SUM(CONVERT(int, value)) AS sum from f
 
 
 -- ##############################
--- ########### Data API 2.0 tasks
+-- ########### Data API 2.0
 -- ##############################
 
 -- ## Total Reach
@@ -187,6 +187,45 @@ SELECT 'daily_aggr_total_unique_video_views' AS name, SUM(value) AS sum FROM fb_
 SELECT 'lifetime_total_unique_video_views' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Unique Video Views' AND sys_time > (CURRENT_DATE-1);
 
 -- ## Treading section data
+
+-- ## Separated Trends APIs: reach
+CREATE VIEW seven_day_reach_delta AS
+SELECT 'seven-day-reach today' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title = 'Daily Total Reach' AND end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE)
+UNION ALL
+SELECT 'seven-day-reach yesterday' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title = 'Daily Total Reach' AND end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1);
+
+-- ## Separated Trends APIs: views
+CREATE VIEW seven_day_views_delta AS
+SELECT 'seven-day-views today' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views' AND end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE)
+UNION ALL
+SELECT 'seven-day-views yesterday' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views' AND end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1);
+
+-- ## Separate Trends APIs: avg view time
+CREATE VIEW seven_day_view_time_delta AS
+SELECT 'seven-day-view-time today' AS name, CONVERT(int,SUM(value)/7000) AS sum FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE '%Total Video View Time%') AND sys_time > (CURRENT_DATE-7) AND sys_time < (CURRENT_DATE)
+UNION ALL
+SELECT 'seven-day-view-time yesterday' AS name, CONVERT(int,SUM(value)/7000) AS sum FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE '%Total Video View Time%') AND sys_time > (CURRENT_DATE-8) AND sys_time < (CURRENT_DATE-1);
+
+-- ## Separate Trends APIs: actions
+
+create view seven_day_unique_share_today as
+select 'seven_day_unique_share today' as name, sum(json_extract_path_text(value, 'share')) as sum from fb_insights where stats_type = 'Insights' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_admin_num_posts_by_type%' and json_extract_path_text(value, 'share') <> ''
+union all
+select 'seven_day_unique_like today' as name, sum(json_extract_path_text(value, 'like')) as sum from fb_insights where stats_type = 'Insights' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'like') <> ''
+union all
+select 'seven_day_unique_comment today' as name, sum(json_extract_path_text(value, 'comment')) as sum from fb_insights where stats_type = 'Insights' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'comment') <> '';
+
+create view seven_day_unique_share_yesterday as
+select 'seven_day_unique_share yesterday' as name, sum(json_extract_path_text(value, 'share')) as sum from fb_insights where stats_type = 'Insights' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_admin_num_posts_by_type%' and json_extract_path_text(value, 'share') <> ''
+union all
+select 'seven_day_unique_like yesterday' as name, sum(json_extract_path_text(value, 'like')) as sum from fb_insights where stats_type = 'Insights' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'like') <> ''
+union all
+select 'seven_day_unique_comment yesterday' as name, sum(json_extract_path_text(value, 'comment')) as sum from fb_insights where stats_type = 'Insights' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'comment') <> '';
+
+create view seven_day_unique_actions_delta as
+select * from seven_day_unique_share_today
+union all
+select * from seven_day_unique_share_yesterday;
 
 -- ## Total Followers
 CREATE VIEW total_followers AS
@@ -254,7 +293,6 @@ SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff
 
 -- ## Usage: Video Total Reactions by day by type for a video over a date range
 SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE 'Daily Reactions by type') AND sys_time < (CURRENT_DATE) AND sys_time > (CURRENT_DATE-8) AND id LIKE '2054005264823683%';
-
 
 
 DROP VIEW union_numbers;
