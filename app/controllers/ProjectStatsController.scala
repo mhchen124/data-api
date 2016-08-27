@@ -53,6 +53,9 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     def getTop10Heatmap(id : Long) = Action {
         Ok(pStats.videoTop10Heatmap(id))
     }
+    def getTop10VideoIds(id : Long) = Action {
+        Ok(pStats.videoTop10VideoIds(id))
+    }
     def getDailyVideoReachDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.dailyVideoReachDateRange(id, start, stop))
     }
@@ -67,5 +70,8 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     }
     def getVideoRetention(id : Long) = Action {
         Ok(pStats.videoRetention(id))
+    }
+    def getTrends(id : Long) = Action {
+        Ok(pStats.trends(id))
     }
 }

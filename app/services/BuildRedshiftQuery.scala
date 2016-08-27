@@ -7,20 +7,24 @@ import scala.slick.jdbc.StaticQuery
 
 trait BuildRedshiftQuery { this: PlainSqlRedshift =>
 
-    def printAll(implicit session: Session): Unit = {
-        println("Insights:")
-        StaticQuery.queryNA[GpsStats]("select * from gps_stats limit 10") foreach { c =>
-            println("* " + c.name + "\t" + c.title + "\t" + c.value + "\t" + c.obj_type + "\t" + c.stats_type)
-        }
+    def testFunc(implicit session: Session): String = {
+        println("Testing: KV value returned by DB...")
+        val res = queryKeyValuePairs(session, "seven_day_reach_delta")
+        res.toString()
     }
 
-    def queryNamedView(implicit session: Session, view_name: String, postClause: String = "") : String = {
-        val numberFromView = StaticQuery[Int, TotalNumber] + "select sum from " + view_name + " " + postClause + " limit ? ;"
+    def querySingleLong(implicit session: Session, view_name: String, postClause: String = "") : String = {
+        val numberFromView = StaticQuery[Int, StatLong] + "select sum from " + view_name + " " + postClause + " limit ? ;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromView(1).first.statNumber)))
     }
 
+    def queryKeyValuePairs(implicit session: Session, view_name: String, postClause: String = "") : List[KeyValuePair] = {
+        val kvPairs = StaticQuery.queryNA[KeyValuePair]("select * from " + view_name + " " + postClause + ";")
+        kvPairs.list
+    }
+
     def queryTotalVideoViewsDateRange(implicit session: Session, start: String, stop: String) : String = {
-        val numberFromQuery = StaticQuery[TotalNumber] +
+        val numberFromQuery = StaticQuery[StatLong] +
             "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'Insights' AND title = 'Daily Total Video Views' AND end_time > '" +
             start + "' AND end_time < '" + stop + "';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
@@ -61,6 +65,11 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     def queryTop10Heatmap(implicit session: Session) : String = {
         val queryResult = StaticQuery[IdValueTime] + "SELECT * FROM top10_heatmap;"
         Json.toJson(queryResult.list).toString()
+    }
+
+    def queryTop10VideoIds(implicit session: Session) : List[KeyValuePair] = {
+        val queryResult = StaticQuery[KeyValuePair] + "SELECT * FROM top10_video_ids;"
+        queryResult.list
     }
 
     def queryDailyVideoReachDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {

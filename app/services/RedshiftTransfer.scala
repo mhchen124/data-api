@@ -2,7 +2,9 @@ package services
 
 import play.api.libs.json._
 import scala.slick.jdbc.GetResult
+class abc() {
 
+}
 /** The Data Transfer Objects for the PlainSqlRedshift */
 trait RedshiftTransfer { this: PlainSqlRedshift =>
 
@@ -21,9 +23,12 @@ trait RedshiftTransfer { this: PlainSqlRedshift =>
     implicit val IdValueTimeReads = Json.reads[IdValueTime]
     implicit val IdValueTimeWrites = Json.writes[IdValueTime]
 
-    case class TotalNumber(statNumber: Long)
-    implicit val getTotalNumberResult = GetResult(r => TotalNumber(r.<<))
+    case class StatLong(statNumber: Long)
+    implicit val getStatLongResult = GetResult(r => StatLong(r.<<))
 
-    case class KeyValuePair(k: String, v: Long)
+    case class StatString(statString: String)
+    implicit val getStatStringResult = GetResult(r => StatString(r.<<))
+
+    case class KeyValuePair(var k: String, var v: Long)
     implicit val getKeyValueResult = GetResult(r => KeyValuePair(r.<<, r.<<))
 }

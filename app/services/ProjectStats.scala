@@ -5,6 +5,7 @@ import javax.inject.Inject
 import play.api.mvc._
 
 
+
 /**
   * Trait for all project stats collecting components to extend.
   */
@@ -24,11 +25,13 @@ trait ProjectStats {
     def dailyVideoViewsDateRange(id : Long, start : String, stop : String) : String
     def dailyVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
     def videoTop10Heatmap(projectID : Long) : String
+    def videoTop10VideoIds(projectID : Long) : String
     def dailyVideoReachDateRange(id : Long, start : String, stop : String) : String
     def averageTimeViewedDateRange(id : Long, start : String, stop : String) : String
     def dailyActionTypesDateRange(id : Long, start : String, stop : String) : String
     def dailyReactionTypesDateRange(id : Long, start : String, stop : String) : String
     def videoRetention(id : Long) : String
+    def trends(projectID : Long) : String
 }
 
 /**
@@ -80,6 +83,9 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     def videoTop10Heatmap(projectID : Long) : String = {
         theDAL.daoGetTop10Heatmap(projectID)
     }
+    def videoTop10VideoIds(projectID : Long) : String = {
+        theDAL.daoGetTop10VideoIds(projectID)
+    }
     def dailyVideoReachDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetDailyVideoReachDateRange(projectID, start, stop)
     }
@@ -94,5 +100,9 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     }
     def videoRetention(id : Long) : String = {
         theDAL.daoGetVideoRetention(id)
+    }
+    def trends(projectID : Long) : String = {
+        theDAL.daoGetTrendsData(projectID)
+
     }
 }
