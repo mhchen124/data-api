@@ -47,6 +47,9 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     def getDailyVideoViewsDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.dailyVideoViewsDateRange(id, start, stop))
     }
+    def getVideoViewsDateRange(id : Long, start : String, stop : String) = Action {
+        Ok(pStats.videoViewsDateRange(id, start, stop))
+    }
     def getDailyVideoViewTypesDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.dailyVideoViewTypesDateRange(id, start, stop))
     }
@@ -59,6 +62,9 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     def getDailyVideoReachDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.dailyVideoReachDateRange(id, start, stop))
     }
+    def getVideoReachDateRange(id : Long, start : String, stop : String) = Action {
+        Ok(pStats.videoReachDateRange(id, start, stop))
+    }
     def getAverageTimeViewedDateRange(id : Long, start : String, stop : String) = Action {
         Ok(pStats.averageTimeViewedDateRange(id, start, stop))
     }
@@ -70,6 +76,9 @@ class ProjectStatsController @Inject() (pStats : ProjectStats) extends Controlle
     }
     def getVideoRetention(id : Long) = Action {
         Ok(pStats.videoRetention(id))
+    }
+    def getVideoRetentions(ids : String) = Action {
+        Ok(pStats.videoRetention(ids))
     }
     def getTrends(id : Long) = Action {
         Ok(pStats.trends(id))

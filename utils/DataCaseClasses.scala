@@ -1,5 +1,16 @@
 package DataCaseClasses
 
+// An element with "name" and "value" as [k,v] pair
+case class KeyValuePair(val k: String, val v: Long) {
+	def -(that: KeyValuePair) = {
+	   val newKV:KeyValuePair = null
+	   if (this.k != that.k)
+		newKV = KeyValuePair("NOP", 0)
+	   else newKV = KeyValuePair(this.k, (this.v - that.v))
+	}
+	override def toString = """"""" + k + """":""" + v
+}
+
 // case for {"love":1,"haha":0,"like":5,"sorry":0,"anger":0,"wow":0}
 case class Reaction(love: Int, haha: Int, like: Int, sorry: Int, anger: Int, wow: Int) extends Serializable {
         def -(that: Reaction) = new Reaction(

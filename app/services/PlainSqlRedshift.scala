@@ -105,6 +105,9 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     def daoGetDailyVideoViewsDateRange(videoID: Long, start: String, stop: String) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryDailyVideoViewsDateRange(session, videoID, start, stop)}
     }
+    def daoGetVideoViewsDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryVideoViewsDateRange(session, videoID, start, stop)}
+    }
     def daoGetDailyVideoViewTypesDateRange(videoID: Long, start: String, stop: String) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryDailyVideoViewTypesDateRange(session, videoID, start, stop)}
     }
@@ -121,6 +124,9 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     def daoGetDailyVideoReachDateRange(videoID: Long, start: String, stop: String) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryDailyVideoReachDateRange(session, videoID, start, stop)}
     }
+    def daoGetVideoReachDateRange(videoID: Long, start: String, stop: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryVideoReachDateRange(session, videoID, start, stop)}
+    }
     def daoGetAverageTimeViewedDateRange(videoID: Long, start: String, stop: String) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryAverageTimeViewedDateRange(session, videoID, start, stop)}
     }
@@ -132,6 +138,9 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     }
     def daoGetVideoRetention(videoID: Long) : String = {
         Database.forConfig("redshift") withSession { implicit session => queryVideoRetention(session, videoID)}
+    }
+    def daoGetVideoRetention(videoIDs: String) : String = {
+        Database.forConfig("redshift") withSession { implicit session => queryVideoRetention(session, videoIDs)}
     }
     def daoGetTrendsData(projID: Long) : String = {
         val trendsData:List[KeyValuePair] =

@@ -55,6 +55,13 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
         Json.toJson(queryResult.list).toString()
     }
 
+    def queryVideoViewsDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
+        val numberFromQuery = StaticQuery[StatLong] +
+            "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'DailyDiff' AND title = 'Daily Total Video Views' AND sys_time > '" +
+            start + "' AND sys_time < '" + stop + "' AND id LIKE '" + vid.toString + "%';"
+        Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
+    }
+
     def queryDailyVideoViewTypesDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
         val queryResult = StaticQuery.queryNA[IdTitleValueTime](
             "SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE 'Daily Organic Video Views' OR title LIKE 'Daily Paid Video Views') AND sys_time > '" +
@@ -77,6 +84,13 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
             "SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time > '" +
             start + "' AND sys_time < '" + stop + "' AND id LIKE '" + vid.toString + "%';"
         Json.toJson(queryResult.list).toString()
+    }
+
+    def queryVideoReachDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
+        val numberFromQuery = StaticQuery[StatLong] +
+            "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time > '" +
+            start + "' AND sys_time < '" + stop + "' AND id LIKE '" + vid.toString + "%';"
+        Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
 
     def queryAverageTimeViewedDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
@@ -103,6 +117,14 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     def queryVideoRetention(implicit session: Session, vid: Long) : String = {
         val queryResult = StaticQuery[IdTitleValueTime] +
             "SELECT id, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-1) AND id LIKE '" + vid.toString + "%';"
+        Json.toJson(queryResult.list).toString()
+    }
+
+    def queryVideoRetention(implicit session: Session, vids: String) : String = {
+        val idList:Array[String] = vids.split(",").map(x => "'" + x + "'")
+        val InCondition:String = idList.mkString(",")
+        val queryResult = StaticQuery[IdTitleValueTime] +
+            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-1) AND asset_id_plat IN (" + InCondition + ");"
         Json.toJson(queryResult.list).toString()
     }
 
