@@ -11,30 +11,46 @@ import play.api.mvc._
   */
 trait ProjectStats {
     def testdb() : String
+
     def totalVideoViews(projectID : Long) : String
     def totalUniqueVideoViews(projectID : Long) : String
     def interactions(projectID : Long) : String
     def gender(projectID : Long) : String
     def followers(projectID : Long) : String
     def reach(projectID : Long) : String
+    def trends(projectID : Long) : String
     def posts(projectID : Long) : String
     def averageTimeViewed(projectID : Long) : String
     def totalTimeViewed(projectID : Long) : String
     def totalVideoViewsDateRange(id : Long, start : String, stop : String) : String
     def totalVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
-    def dailyVideoViewsDateRange(id : Long, start : String, stop : String) : String
-    def videoViewsDateRange(id : Long, start : String, stop : String) : String
-    def dailyVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
     def videoTop10Heatmap(projectID : Long) : String
     def videoTop10VideoIds(projectID : Long) : String
-    def dailyVideoReachDateRange(id : Long, start : String, stop : String) : String
-    def videoReachDateRange(id : Long, start : String, stop : String) : String
+
     def averageTimeViewedDateRange(id : Long, start : String, stop : String) : String
     def dailyActionTypesDateRange(id : Long, start : String, stop : String) : String
     def dailyReactionTypesDateRange(id : Long, start : String, stop : String) : String
+    def dailyVideoViewsDateRange(id : Long, start : String, stop : String) : String
+    def dailyVideoViewTypesDateRange(id : Long, start : String, stop : String) : String
+    def dailyVideoReachDateRange(id : Long, start : String, stop : String) : String
+
+    def videoViewsDateRange(id : Long, start : String, stop : String) : String
+    def videoReachDateRange(id : Long, start : String, stop : String) : String
     def videoRetention(id : Long) : String
-    def videoRetention(ids : String) : String
-    def trends(projectID : Long) : String
+
+
+    def averageTimeViewedDateRangeBatch(ids : String, start : String, stop : String) : String
+    def dailyActionTypesDateRangeBatch(ids : String, start : String, stop : String) : String
+    def dailyReactionTypesDateRangeBatch(ids : String, start : String, stop : String) : String
+    def dailyVideoViewsDateRangeBatch(ids : String, start : String, stop : String) : String
+    def dailyVideoViewTypesDateRangeBatch(ids : String, start : String, stop : String) : String
+
+
+    def videoViewsDateRangeBatch(ids : String, start : String, stop : String) : String
+    def videoRetentionBatch(ids : String) : String
+
+
+    def videoStatsBatch(ids : String, start: String, stop: String) : String
 }
 
 /**
@@ -44,6 +60,9 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     def testdb() : String = {
         theDAL.testdb()
     }
+
+    // Project level APIs
+
     def totalVideoViews(projectID : Long) : String = {
         theDAL.daoGetTotalVideoViews(projectID)
     }
@@ -62,6 +81,9 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     def reach(projectID : Long) : String = {
         theDAL.daoGetTotalReach(projectID)
     }
+    def trends(projectID : Long) : String = {
+        theDAL.daoGetTrendsData(projectID)
+    }
     def posts(projectID : Long) : String = {
         theDAL.daoGetTotalPosts(projectID)
     }
@@ -77,26 +99,18 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     def totalVideoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetTotalVideoViewTypesDateRange(projectID, start, stop)
     }
-    def dailyVideoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyVideoViewsDateRange(projectID, start, stop)
-    }
-    def videoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetVideoViewsDateRange(projectID, start, stop)
-    }
-    def dailyVideoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyVideoViewTypesDateRange(projectID, start, stop)
-    }
     def videoTop10Heatmap(projectID : Long) : String = {
         theDAL.daoGetTop10Heatmap(projectID)
     }
     def videoTop10VideoIds(projectID : Long) : String = {
         theDAL.daoGetTop10VideoIds(projectID)
     }
+
+
+    // Asset level APIs - daily data
+
     def dailyVideoReachDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetDailyVideoReachDateRange(projectID, start, stop)
-    }
-    def videoReachDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetVideoReachDateRange(projectID, start, stop)
     }
     def averageTimeViewedDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetAverageTimeViewedDateRange(projectID, start, stop)
@@ -107,14 +121,57 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
     def dailyReactionTypesDateRange(projectID : Long, start : String, stop : String) : String = {
         theDAL.daoGetDailyReactionTypesDateRange(projectID, start, stop)
     }
+    def dailyVideoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewsDateRange(projectID, start, stop)
+    }
+    def dailyVideoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewTypesDateRange(projectID, start, stop)
+    }
+
+
+    // Asset level - total number
+
+    def videoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetVideoViewsDateRange(projectID, start, stop)
+    }
+    def videoReachDateRange(projectID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetVideoReachDateRange(projectID, start, stop)
+    }
     def videoRetention(id : Long) : String = {
         theDAL.daoGetVideoRetention(id)
     }
-    def videoRetention(ids : String) : String = {
-        theDAL.daoGetVideoRetention(ids)
-    }
-    def trends(projectID : Long) : String = {
-        theDAL.daoGetTrendsData(projectID)
 
+
+    // Asset level APIs - batched assets calls for daily data
+
+    def averageTimeViewedDateRangeBatch(assetIDs : String, start : String, stop : String) : String = {
+        theDAL.daoGetAverageTimeViewedDateRangeBatch(assetIDs, start, stop)
+    }
+    def dailyActionTypesDateRangeBatch(assetIDs : String, start : String, stop : String) : String = {
+        theDAL.daoGetDailyActionTypesDateRangeBatch(assetIDs, start, stop)
+    }
+    def dailyReactionTypesDateRangeBatch(assetIDs : String, start : String, stop : String) : String = {
+        theDAL.daoGetDailyReactionTypesDateRangeBatch(assetIDs, start, stop)
+    }
+    def dailyVideoViewTypesDateRangeBatch(assetIDs : String, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewTypesDateRangeBatch(assetIDs, start, stop)
+    }
+    def dailyVideoViewsDateRangeBatch(assetIDs : String, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewsDateRangeBatch(assetIDs, start, stop)
+    }
+
+
+    // Asset level APIs - batched assets calls for total number
+
+    def videoViewsDateRangeBatch(ids : String, start : String, stop : String) : String = {
+        theDAL.daoGetVideoViewsDateRangeBatch(ids, start, stop)
+    }
+    def videoRetentionBatch(ids : String) : String = {
+        theDAL.daoGetVideoRetentionBatch(ids)
+    }
+
+
+    def videoStatsBatch(ids : String, start: String, stop: String) : String = {
+        theDAL.daoGetVideoStatsBatch(ids, start, stop)
     }
 }

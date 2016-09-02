@@ -8,7 +8,18 @@ GET     /testdb                                                 controllers.Proj
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                                           controllers.Assets.versioned(path="/public", file: Asset)
 
-# GPS data API routes
+
+#######################
+#
+# GPS DATA API ROUTES #
+#
+#######################
+
+
+# ------------------
+# Project level APIs
+# ------------------
+
 GET     /video-views-total/:id                                  controllers.ProjectStatsController.getTotalVideoViews(id: Long)
 GET     /video-views-total-unique/:id                           controllers.ProjectStatsController.getTotalUniqueVideoViews(id: Long)
 GET     /interactions/:id                                       controllers.ProjectStatsController.getTotalInteractions(id: Long)
@@ -24,13 +35,37 @@ GET     /total-video-view-types-date-range/:id/*start/*stop     controllers.Proj
 GET     /top10-heatmap/:id                                      controllers.ProjectStatsController.getTop10Heatmap(id: Long)
 GET     /top10-video-ids/:id                                    controllers.ProjectStatsController.getTop10VideoIds(id: Long)
 
+
+# -----------------------------------
+# Asset level APIs - individual asset
+# -----------------------------------
+
+# date ranged daily data
+GET     /daily-video-reach-date-range/:id/*start/*stop          controllers.ProjectStatsController.getDailyVideoReachDateRange(id: Long, start: String, stop: String)
 GET     /avg-time-viewed-date-range/:id/*start/*stop            controllers.ProjectStatsController.getAverageTimeViewedDateRange(id: Long, start: String, stop: String)
 GET     /daily-action-types-date-range/:id/*start/*stop         controllers.ProjectStatsController.getDailyActionTypesDateRange(id: Long, start: String, stop: String)
 GET     /daily-reaction-types-date-range/:id/*start/*stop       controllers.ProjectStatsController.getDailyReactionTypesDateRange(id: Long, start: String, stop: String)
 GET     /daily-video-views-date-range/:id/*start/*stop          controllers.ProjectStatsController.getDailyVideoViewsDateRange(id: Long, start: String, stop: String)
 GET     /daily-video-view-types-date-range/:id/*start/*stop     controllers.ProjectStatsController.getDailyVideoViewTypesDateRange(id: Long, start: String, stop: String)
-GET     /video-retention/:id                                    controllers.ProjectStatsController.getVideoRetention(id: Long)
-
+# date ranged total number
 GET     /video-views-date-range/:id/*start/*stop                controllers.ProjectStatsController.getVideoViewsDateRange(id: Long, start: String, stop: String)
 GET     /video-reach-date-range/:id/*start/*stop                controllers.ProjectStatsController.getVideoReachDateRange(id: Long, start: String, stop: String)
-GET     /video-retention-batch/*ids                             controllers.ProjectStatsController.getVideoRetentions(ids: String)
+GET     /video-retention/:id                                    controllers.ProjectStatsController.getVideoRetention(id: Long)
+
+
+# --------------------------------
+# Asset level APIs - grouped asset
+# --------------------------------
+
+# date ranged daily data
+GET     /avg-time-viewed-date-range-batch/*start/*stop/*ids             controllers.ProjectStatsController.getAverageTimeViewedDateRangeBatch(ids: String, start: String, stop: String)
+GET     /daily-action-types-date-range-batch/*start/*stop/*ids          controllers.ProjectStatsController.getDailyActionTypesDateRangeBatch(ids: String, start: String, stop: String)
+GET     /daily-reaction-types-date-range-batch/*start/*stop/*ids        controllers.ProjectStatsController.getDailyReactionTypesDateRangeBatch(ids: String, start: String, stop: String)
+GET     /daily-video-views-date-range-batch/*start/*stop/*ids           controllers.ProjectStatsController.getDailyVideoViewsDateRangeBatch(ids: String, start: String, stop: String)
+GET     /daily-video-view-types-date-range-batch/*start/*stop/*ids      controllers.ProjectStatsController.getDailyVideoViewTypesDateRangeBatch(ids: String, start: String, stop: String)
+# date ranged total number
+GET     /video-views-date-range-batch/*start/*stop/*ids                 controllers.ProjectStatsController.getVideoViewsDateRangeBatch(ids: String, start: String, stop: String)
+#GET     /video-reach-date-range/:id/*start/*stop                controllers.ProjectStatsController.getVideoReachDateRange(id: Long, start: String, stop: String)
+GET     /video-retention-batch/*ids                                     controllers.ProjectStatsController.getVideoRetentionBatch(ids: String)
+
+GET     /video-stats-batch/*start/*stop/*ids                            controllers.ProjectStatsController.getVideoStatsBatch(ids: String, start: String, stop: String)
