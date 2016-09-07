@@ -147,52 +147,50 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
     // Project level
 
     def daoGetTotalVideoViews(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_video_views")}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViews(session, projID)}
     }
     def daoGetTotalUniqueVideoViews(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_unique_video_views")}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalUniqueVideoViews(session, projID)}
     }
     def daoGetInteractions(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_actions")}
+        Database.forConfig("redshift") withSession { implicit session => queryInteractions(session, projID)}
     }
     def daoGetTotalReachByGender(projID: Long) : String = {
         Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_reach_page_posts")}
     }
     def daoGetTotalFollowers(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_followers") }
+        Database.forConfig("redshift") withSession { implicit session => queryTotalFollowers(session, projID) }
     }
     def daoGetTotalReach(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_reach")}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalReach(session, projID) }
     }
     def daoGetTrendsData(projID: Long) : String = {
         val trendsData:List[KeyLongValuePair] =
-            Database.forConfig("redshift") withSession { implicit session => queryKeyLongValuePairs(session, "seven_day_trends_data")}
+            Database.forConfig("redshift") withSession { implicit session => queryTrendsData(session, projID)}
         val myTrends = new Trends(trendsData)
         myTrends.toString
     }
     def daoGetTotalPosts(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_posts")}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalPosts(session, projID)}
     }
     def daoGetAvgTimeViewed(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "avg_time_viewed")}
+        Database.forConfig("redshift") withSession { implicit session => queryAvgTimeViewed(session, projID)}
     }
     def daoGetTotalTimeViewed(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => querySingleLong(session, "total_time_viewed")}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalTimeViewed(session, projID)}
     }
     def daoGetTotalVideoViewsDateRange(projID: Long, start: String, stop: String) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViewsDateRange(session, start, stop)}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViewsDateRange(session, projID, start, stop)}
     }
     def daoGetTotalVideoViewTypesDateRange(projID: Long, start: String, stop: String) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViewTypesDateRange(session, start, stop)}
+        Database.forConfig("redshift") withSession { implicit session => queryTotalVideoViewTypesDateRange(session, projID, start, stop)}
     }
     def daoGetTop10Heatmap(projID: Long) : String = {
-        Database.forConfig("redshift") withSession { implicit session => queryTop10Heatmap(session)}
+        Database.forConfig("redshift") withSession { implicit session => queryTop10Heatmap(session, projID)}
     }
     def daoGetTop10VideoIds(projID: Long) : String = {
-        val vidList = Database.forConfig("redshift") withSession { implicit session => queryTop10VideoIds(session)}
-        val start = """"{"ranked_video_ids(id, sum)":[{ """
-        val end = """}]}"""
-        val json = vidList.mkString(start, ",", end)
+        val vidList = Database.forConfig("redshift") withSession { implicit session => queryTop10VideoIds(session, projID)}
+        val json = Json.toJson(vidList)
         json.toString()
     }
 
