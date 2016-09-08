@@ -14,26 +14,29 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
 
     def querySingleLong(implicit session: Session, view_name: String, postClause: String = "") : String = {
-        val numberFromView = StaticQuery[Int, StatLong] + "select sum from " + view_name + " " + postClause + " limit ? ;"
+        val numberFromView = StaticQuery[Int, StatLong] + "SELECT sum FROM " + view_name + " " + postClause + " limit ? ;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromView(1).first.statNumber)))
     }
     def queryKeyLongValuePairs(implicit session: Session, view_name: String, postClause: String = "") : List[KeyLongValuePair] = {
-        val kvPairs = StaticQuery.queryNA[KeyLongValuePair]("select * from " + view_name + " " + postClause + ";")
+        val kvPairs = StaticQuery.queryNA[KeyLongValuePair]("SELECT * FROM " + view_name + " " + postClause + ";")
         kvPairs.list
     }
     def queryKeyStrValuePairs(implicit session: Session, view_name: String, postClause: String = "") : List[KeyStrValuePair] = {
-        val kvPairs = StaticQuery.queryNA[KeyStrValuePair]("select * from " + view_name + " " + postClause + ";")
+        val kvPairs = StaticQuery.queryNA[KeyStrValuePair]("SELECT * FROM " + view_name + " " + postClause + ";")
         kvPairs.list
     }
 
-    // Project level calls
+    // PROJECT LEVEL CALLs
 
     def queryTotalVideoViews(implicit session: Session, projID: Long) : String = {
-        val numberFromQuery = StaticQuery[StatLong] + "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND proj_id_plat like '" + projID.toString + "' AND title LIKE 'Lifetime Total Video Views' AND sys_time > (CURRENT_DATE-2);"
+        val numberFromQuery = StaticQuery[StatLong] +
+            "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND proj_id_plat like '" + projID.toString +
+            "' AND title LIKE 'Lifetime Total Video Views' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%');"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalUniqueVideoViews(implicit session: Session, projID: Long) : String = {
-        val numberFromQuery = StaticQuery[StatLong] + "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND proj_id_plat like '" + projID.toString + "' AND title LIKE 'Lifetime Unique Video Views' AND sys_time > (CURRENT_DATE-2);"
+        val numberFromQuery = StaticQuery[StatLong] + "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND proj_id_plat like '" + projID.toString +
+            "' AND title LIKE 'Lifetime Unique Video Views' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%');"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryInteractions(implicit session: Session, projID: Long) : String = {
@@ -44,24 +47,27 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
             "CONVERT(int, json_extract_path_text(value, 'sorry')) " +
             "CONVERT(int, json_extract_path_text(value, 'anger')) " +
             "CONVERT(int, json_extract_path_text(value, 'wow')) ) AS sum FROM fb_insights "
-        "WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Reactions by type') AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time > (CURRENT_DATE-2);"
+        "WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Reactions by type') AND proj_id_plat LIKE '" + projID.toString +
+            "' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%');"
 
         val shareComments = StaticQuery + "DROP VIEW IF EXISTS total_share_comments;" +
             "CREATE VIEW total_share_comments AS SELECT 'total share and comments' AS name, " +
             "SUM( nullif(json_extract_path_text(value, 'share'), ' ')::int + nullif(json_extract_path_text(value, 'comment'), ' ')::int ) AS sum " +
-            "FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Video Stories by action type') AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time > (CURRENT_DATE-2);"
+            "FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Video Stories by action type') AND proj_id_plat LIKE '" + projID.toString +
+            "' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%');"
 
         val numberFromQuery = StaticQuery[StatLong] + "SELECT ((SELECT sum FROM total_reactions) + (SELECT sum FROM total_share_comments)) AS sum;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalFollowers(implicit session: Session, projID: Long) : String = {
-        val numberFromQuery = StaticQuery[StatLong] + "SELECT value AS sum FROM fb_insights WHERE title LIKE 'page_fan_count' AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time > (CURRENT_DATE-2);"
+        val numberFromQuery = StaticQuery[StatLong] + "SELECT value AS sum FROM fb_insights WHERE title LIKE 'page_fan_count' AND proj_id_plat LIKE '" + projID.toString +
+            "' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%');"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalReach(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] + "SELECT SUM(value) AS sum FROM fb_insights " +
             "WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Video Total Reach' " +
-            "AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time > (CURRENT_DATE-2);"
+            "AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%');"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTrendsData(implicit session: Session, projID: Long) : List[KeyLongValuePair] = {
@@ -106,22 +112,22 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryTotalPosts(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "SELECT sum(value) FROM fb_insights WHERE title LIKE 'Daily Number of posts made by the admin' AND proj_id_plat LIKE '" + projID.toString + "';"
+            "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Number of posts made by the admin' AND proj_id_plat LIKE '" + projID.toString + "';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryAvgTimeViewed(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "SELECT AVG(value)/1000 AS sum FROM fb_insights WHERE title LIKE 'Lifetime Average time video viewed' AND proj_id_plat LIKE '" + projID.toString + "';"
+            "SELECT AVG(value)/1000 AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Average time video viewed' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%') AND proj_id_plat LIKE '" + projID.toString + "';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalTimeViewed(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "select SUM(value)/1000 as sum from fb_insights where title = 'Lifetime Total Video View Time (in MS)' AND proj_id_plat LIKE '" + projID.toString + "';"
+            "SELECT SUM(value)/1000 AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title = 'Lifetime Total Video View Time (in MS)' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%') AND proj_id_plat LIKE '" + projID.toString + "';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalVideoViewsDateRange(implicit session: Session, projID: Long, start: String, stop: String) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'Insights' AND title = 'Daily Total Video Views' " +
+            "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title = 'Daily Total Video Views' " +
             "AND proj_id_plat LIKE '" + projID.toString + "' AND end_time > '" + start + "' AND end_time < '" + stop + "';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
@@ -154,12 +160,12 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryTop10VideoIds(implicit session: Session, projID: Long) : List[KeyLongValuePair] = {
         val queryResult = StaticQuery[KeyLongValuePair] +
-            "select asset_id_plat, sum(value) from top10_heatmap where proj_id_plat like '" + projID.toString + "' group by asset_id_plat order by sum(value) desc;"
+            "SELECT asset_id_plat, SUM(value) FROM top10_heatmap WHERE proj_id_plat LIKE '" + projID.toString + "' GROUP BY asset_id_plat ORDER BY SUM(value) DESC;"
         queryResult.list
     }
 
 
-    // Asset level - daily data
+    // ASSET LEVEL CALLs - Daily Data
 
     def queryDailyVideoReachDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
         val queryResult = StaticQuery[IdTitleValueTime] +
@@ -198,28 +204,28 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
         Json.toJson(queryResult.list).toString()
     }
 
-    // Asset level - total number
+    // ASSET LEVEL CALLs - Total Numbers
 
     def queryVideoViewsDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
             "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'DailyDiff' AND title = 'Daily Total Video Views' AND sys_time > '" +
-            start + "' AND sys_time < '" + stop + "' AND id LIKE '" + vid.toString + "%';"
+            start + "' AND sys_time < '" + stop + "' AND asset_id_plat LIKE '" + vid.toString + "%';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryVideoReachDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
             "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time > '" +
-            start + "' AND sys_time < '" + stop + "' AND id LIKE '" + vid.toString + "%';"
+            start + "' AND sys_time < '" + stop + "' AND asset_id_plat LIKE '" + vid.toString + "%';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryVideoRetention(implicit session: Session, vid: Long) : String = {
         val queryResult = StaticQuery[IdTitleValueTime] +
-            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-2) AND asset_id_plat LIKE '" + vid.toString + "%';"
+            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%') AND asset_id_plat LIKE '" + vid.toString + "%';"
         Json.toJson(queryResult.list).toString()
     }
 
 
-    // Batched asset APIs - daily data
+    // BATCHED ASSET LEVEL CALLs - Daily Data
 
     def queryAverageTimeViewedDateRangeBatch(implicit session: Session, vids: String, start: String, stop: String) : String = {
         val idList:Array[String] = vids.split(",").map(x => "'" + x + "'")
@@ -271,7 +277,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
 
 
-    // Batched asset APIs - total number
+    // BATCHED ASSET LEVEL CALLs - Total numbers
 
     def queryVideoViewsListDateRangeBatch(implicit session: Session, vids: String, start: String, stop: String) : List[KeyLongValuePair] = {
         val idList:Array[String] = vids.split(",").map(x => "'" + x + "'")
@@ -288,7 +294,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
         val idList:Array[String] = vids.split(",").map(x => "'" + x + "'")
         val InCondition:String = idList.mkString(",")
         val queryResult = StaticQuery[KeyStrValuePair] +
-            "SELECT asset_id_plat, value FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-2) AND asset_id_plat IN (" + InCondition + ");"
+            "SELECT asset_id_plat, value FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%') AND asset_id_plat IN (" + InCondition + ");"
         queryResult.list
     }
     def queryVideoRetentionBatch(implicit session: Session, vids: String) : String = {

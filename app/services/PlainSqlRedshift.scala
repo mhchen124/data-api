@@ -110,13 +110,17 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
         private var totalViewsQ4:Long = 0
 
         for (vid <- arrIDs) {
-            val v:Long = views.get(vid).get
-            totalViews += v
-            val ret:VideoRetention = retentions.get(vid).get
-            totalViewsQ1 += (ret.valQ1 * v.toDouble).toLong
-            totalViewsQ2 += (ret.valQ2 * v.toDouble).toLong
-            totalViewsQ3 += (ret.valQ3 * v.toDouble).toLong
-            totalViewsQ4 += (ret.valQ4 * v.toDouble).toLong
+            val v:Long = views.get(vid).getOrElse(0)
+            if (v > 0) {
+                totalViews += v
+            }
+            if (retentions.get(vid).isDefined) {
+                val ret: VideoRetention = retentions.get(vid).get
+                totalViewsQ1 += (ret.valQ1 * v.toDouble).toLong
+                totalViewsQ2 += (ret.valQ2 * v.toDouble).toLong
+                totalViewsQ3 += (ret.valQ3 * v.toDouble).toLong
+                totalViewsQ4 += (ret.valQ4 * v.toDouble).toLong
+            }
         }
 
         firstQuartile = totalViewsQ1.toDouble / totalViews.toDouble
@@ -125,9 +129,11 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
         forthQuartile = totalViewsQ4.toDouble / totalViews.toDouble
 
         for (vid <- arrIDs) {
-            val ret:VideoRetention = retentions.get(vid).get
-            val v:Long = views.get(vid).get
-            val t:Long = avgTimes.get(vid).get
+            if (retentions.get(vid).isDefined) {
+                val ret: VideoRetention = retentions.get(vid).get
+            }
+            val v:Long = views.get(vid).getOrElse(0)
+            val t:Long = avgTimes.get(vid).getOrElse(0)
             avgTime += (t.toDouble * v.toDouble / totalViews.toDouble).toLong
         }
 

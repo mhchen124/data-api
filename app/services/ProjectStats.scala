@@ -109,36 +109,36 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
 
     // Asset level APIs - daily data
 
-    def dailyVideoReachDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyVideoReachDateRange(projectID, start, stop)
+    def dailyVideoReachDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoReachDateRange(assetID, start, stop)
     }
-    def averageTimeViewedDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetAverageTimeViewedDateRange(projectID, start, stop)
+    def averageTimeViewedDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetAverageTimeViewedDateRange(assetID, start, stop)
     }
-    def dailyActionTypesDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyActionTypesDateRange(projectID, start, stop)
+    def dailyActionTypesDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyActionTypesDateRange(assetID, start, stop)
     }
-    def dailyReactionTypesDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyReactionTypesDateRange(projectID, start, stop)
+    def dailyReactionTypesDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyReactionTypesDateRange(assetID, start, stop)
     }
-    def dailyVideoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyVideoViewsDateRange(projectID, start, stop)
+    def dailyVideoViewsDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewsDateRange(assetID, start, stop)
     }
-    def dailyVideoViewTypesDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetDailyVideoViewTypesDateRange(projectID, start, stop)
+    def dailyVideoViewTypesDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetDailyVideoViewTypesDateRange(assetID, start, stop)
     }
 
 
     // Asset level - total number
 
-    def videoViewsDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetVideoViewsDateRange(projectID, start, stop)
+    def videoViewsDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetVideoViewsDateRange(assetID, start, stop)
     }
-    def videoReachDateRange(projectID : Long, start : String, stop : String) : String = {
-        theDAL.daoGetVideoReachDateRange(projectID, start, stop)
+    def videoReachDateRange(assetID : Long, start : String, stop : String) : String = {
+        theDAL.daoGetVideoReachDateRange(assetID, start, stop)
     }
-    def videoRetention(id : Long) : String = {
-        theDAL.daoGetVideoRetention(id)
+    def videoRetention(assetID : Long) : String = {
+        theDAL.daoGetVideoRetention(assetID)
     }
 
 
@@ -163,15 +163,15 @@ class GpsProjectFacebookStats @Inject() (theDAL : PlainSqlRedshift) extends Proj
 
     // Asset level APIs - batched assets calls for total number
 
-    def videoViewsDateRangeBatch(ids : String, start : String, stop : String) : String = {
-        theDAL.daoGetVideoViewsDateRangeBatch(ids, start, stop)
+    def videoViewsDateRangeBatch(assetIDs : String, start : String, stop : String) : String = {
+        theDAL.daoGetVideoViewsDateRangeBatch(assetIDs, start, stop)
     }
-    def videoRetentionBatch(ids : String) : String = {
-        theDAL.daoGetVideoRetentionBatch(ids)
+    def videoRetentionBatch(assetIDs : String) : String = {
+        theDAL.daoGetVideoRetentionBatch(assetIDs)
     }
 
 
-    def videoStatsBatch(ids : String, start: String, stop: String) : String = {
-        theDAL.daoGetVideoStatsBatch(ids, start, stop)
+    def videoStatsBatch(assetIDs : String, start: String, stop: String) : String = {
+        theDAL.daoGetVideoStatsBatch(assetIDs, start, stop)
     }
 }
