@@ -137,6 +137,8 @@ class PlainSqlRedshift extends App with RedshiftInterpolation with RedshiftTrans
             avgTime += (t.toDouble * v.toDouble / totalViews.toDouble).toLong
         }
 
+        avgTime = (avgTime.toDouble / 1000.0).toLong
+
         override def toString = """{"AvgTimeViewed":""" + avgTime +
                                 """, "Q1":""" + firstQuartile +
                                 """, "Q2":""" + secondQuartile +

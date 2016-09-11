@@ -30,13 +30,13 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     def queryTotalVideoViews(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
             "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND proj_id_plat LIKE '" + projID.toString +
-            "' AND title LIKE 'Lifetime Total Video Views' AND sys_time > (CURRENT_DATE-2)  GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
+            "' AND title LIKE 'Lifetime Total Video Views' AND sys_time >= (CURRENT_DATE-2)  GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalUniqueVideoViews(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
             "SELECT SUM(value) AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND proj_id_plat like '" + projID.toString +
-            "' AND title LIKE 'Lifetime Unique Video Views' AND sys_time > (CURRENT_DATE-2)  GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
+            "' AND title LIKE 'Lifetime Unique Video Views' AND sys_time >= (CURRENT_DATE-2)  GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryInteractions(implicit session: Session, projID: Long) : String = {
@@ -45,13 +45,13 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryTotalFollowers(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] + "SELECT value AS sum FROM fb_insights WHERE title LIKE 'page_fan_count' AND proj_id_plat LIKE '" + projID.toString +
-            "' AND sys_time > (CURRENT_DATE-2) ORDER BY sys_time DESC LIMIT 1;"
+            "' AND sys_time >= (CURRENT_DATE-2) ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalReach(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] + "SELECT SUM(value) AS sum FROM fb_insights " +
             "WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Video Total Reach' " +
-            "AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time > (CURRENT_DATE-2) GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
+            "AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time >= (CURRENT_DATE-2) GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTrendsData(implicit session: Session, projID: Long) : List[KeyLongValuePair] = {
@@ -65,12 +65,12 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryAvgTimeViewed(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "SELECT AVG(value)/1000 AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Average time video viewed' AND sys_time > (CURRENT_DATE-2) AND proj_id_plat LIKE '" + projID.toString + "' GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
+            "SELECT AVG(value)/1000 AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Average time video viewed' AND sys_time >= (CURRENT_DATE-2) AND proj_id_plat LIKE '" + projID.toString + "' GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalTimeViewed(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "SELECT SUM(value)/1000 AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title = 'Lifetime Total Video View Time (in MS)' AND sys_time > (CURRENT_DATE-2) AND proj_id_plat LIKE '" + projID.toString + "' GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
+            "SELECT SUM(value)/1000 AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND title = 'Lifetime Total Video View Time (in MS)' AND sys_time >= (CURRENT_DATE-2) AND proj_id_plat LIKE '" + projID.toString + "' GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
     def queryTotalVideoViewsDateRange(implicit session: Session, projID: Long, start: String, stop: String) : String = {
@@ -165,7 +165,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryVideoRetention(implicit session: Session, vid: Long) : String = {
         val queryResult = StaticQuery[IdTitleValueTime] +
-            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time LIKE (trunc(CONVERT_TIMEZONE ('UTC', 'PST', CURRENT_DATE)) || '%') AND asset_id_plat LIKE '" + vid.toString + "%';"
+            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time >= (CURRENT_DATE-2) AND asset_id_plat LIKE '" + vid.toString + "%' ORDER BY sys_time DESC LIMIT 1;"
         Json.toJson(queryResult.list).toString()
     }
 
