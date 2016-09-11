@@ -238,8 +238,13 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     def queryVideoRetentionListBatch(implicit session: Session, vids: String) : List[KeyStrValuePair] = {
         val idList:Array[String] = vids.split(",").map(x => "'" + x + "'")
         val InCondition:String = idList.mkString(",")
+        //val queryResult = StaticQuery[KeyStrValuePair] +
+        //    "SELECT asset_id_plat, value FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-1) AND asset_id_plat IN (" + InCondition + ");"
         val queryResult = StaticQuery[KeyStrValuePair] +
-            "SELECT asset_id_plat, value FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Percentage of viewers at each interval%' AND sys_time > (CURRENT_DATE-1) AND asset_id_plat IN (" + InCondition + ");"
+            "WITH ld AS (SELECT asset_id_plat, max(sys_time) AS latest FROM fb_insights where stats_type = 'VideoInsights' GROUP BY asset_id_plat) " +
+            "SELECT s.asset_id_plat, s.value FROM fb_insights s JOIN ld ON ld.asset_id_plat = s.asset_id_plat " +
+            "WHERE s.sys_time = ld.latest AND s.stats_type = 'VideoInsights' AND s.title LIKE 'Lifetime Percentage of viewers at each interval%' AND s.asset_id_plat IN (" + InCondition + ");"
+
         queryResult.list
     }
     def queryVideoRetentionBatch(implicit session: Session, vids: String) : String = {
