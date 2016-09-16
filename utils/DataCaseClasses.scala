@@ -3,7 +3,7 @@ package DataCaseClasses
 // An element with "name" and "value" as [k,v] pair
 case class KeyValuePair(val k: String, val v: Long) {
 	def -(that: KeyValuePair) = {
-	   val newKV:KeyValuePair = null
+	   var newKV:KeyValuePair = null
 	   if (this.k != that.k)
 		newKV = KeyValuePair("NOP", 0)
 	   else newKV = KeyValuePair(this.k, (this.v - that.v))
@@ -32,8 +32,35 @@ case class Action(like: Int, share: Int, comment: Int) extends Serializable {
         override def toString = """{"like":""" + like + ""","share":""" + share + ""","comment":""" + comment + "}"	
 }
 
-case class Stats(description: String, title: String, name: String, id: String, obj_type: String, period: String, stats_type: String, sys_time: String, old_value: String, new_value: String, value: String) extends Serializable {
-    	override def toString = "{" + """"sys_time":"""" + sys_time + """","title":"""" + title + """","name":"""" + name  + """","id":"""" + id + """","obj_type":"""" + obj_type + """","period":"""" + period + """","stats_type":"""" + stats_type + """","old_value:":""" + old_value + ""","new_value":""" + new_value + ""","value":""" + value + "}"
+case class Stats(description: String,
+                 title: String,
+                 name: String,
+                 id: String,
+                 plat_id: String,
+                 proj_id_plat: String,
+                 asset_id_plat: String,
+                 obj_type: String,
+                 period: String,
+                 stats_type: String,
+                 sys_time: String,
+                 old_value: String,
+                 new_value: String,
+                 value: String) extends Serializable {
+
+    	override def toString = "{" +
+            """"sys_time":"""" + sys_time +
+            """","title":"""" + title +
+            """","name":"""" + name  +
+            """","id":"""" + id +
+            """","plat_id":"""" + plat_id +
+            """","proj_id_plat":"""" + proj_id_plat +
+            """","asset_id_plat":"""" + asset_id_plat +
+            """","obj_type":"""" + obj_type +
+            """","period":"""" + period +
+            """","stats_type":"""" + stats_type +
+            """","old_value:":""" + old_value +
+            ""","new_value":""" + new_value +
+            ""","value":""" + value + "}"
 
 }
 
