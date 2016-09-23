@@ -387,30 +387,6 @@ select * from fb_insights;
 
 -- #### DW Copy Operation #######
 
--- [Page insights data]
-
-COPY fb_insights (end_time, id, title, name, value, obj_type, stats_type, sys_time) FROM 's3://gps-stats/2016/08/11/fb-graph-1495821923975356-insights-2016-08-11DailyStandard.data' 
-  CREDENTIALS 'aws_access_key_id=AKIAILESYVWIW6RGB7AA;aws_secret_access_key=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' 
-  json 'auto';
-
-update fb_insights set proj_id_plat = split_part(id, '/', 1) where (stats_type = 'Insights') and sys_time like '2016-09%';
-
--- [Video insights data]
-
-COPY fb_insights(end_time, id, title, name, value, proj_id, proj_status, obj_type, stats_type, sys_time) FROM 's3://gps-stats/2016/08/11/fb-graph-1495821923975356-2016-08-11.video_insights.data' 
-  CREDENTIALS 'aws_access_key_id=AKIAILESYVWIW6RGB7AA;aws_secret_access_key=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' 
-  json 'auto';
-
-update fb_insights set asset_id_plat = split_part(id, '/', 1) where (stats_type = 'VideoInsights') and sys_time like '2016-09-02%';
-
-
--- ############# [Video insight daily diff data] ##################
-
-COPY fb_insights(end_time, id, title, name, value, proj_id, proj_status, obj_type, stats_type, sys_time) FROM 's3://gps-stats/2016/08/28/video_insights_diff/part-00000'
-  CREDENTIALS 'aws_access_key_id=AKIAILESYVWIW6RGB7AA;aws_secret_access_key=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'
-  json 'auto';
-
-update fb_insights set asset_id_plat = split_part(id, '/', 1) where (stats_type = 'DailyDiff') and sys_time like '2016-09-01%';
 
 
 -- ### Update to set Project IDs
@@ -420,15 +396,6 @@ UPDATE fb_insights SET proj_id_plat = '612330242258452' WHERE stats_type = 'Vide
 UPDATE fb_insights SET proj_id_plat = '612330242258452' WHERE stats_type = 'DailyDiff' AND asset_id_plat IN
   (SELECT asset_id_plat FROM gps_proj_assets WHERE proj_id_plat = '612330242258452');
 
-UPDATE fb_insights SET proj_id_plat = '1495821923975356' WHERE stats_type = 'VideoInsights' AND asset_id_plat IN
-  (SELECT asset_id_plat FROM gps_proj_assets WHERE proj_id_plat = '1495821923975356');
-UPDATE fb_insights SET proj_id_plat = '1495821923975356' WHERE stats_type = 'DailyDiff' AND asset_id_plat IN
-  (SELECT asset_id_plat FROM gps_proj_assets WHERE proj_id_plat = '1495821923975356');
-
-UPDATE fb_insights SET proj_id_plat = '1487009051605323' WHERE stats_type = 'VideoInsights' AND asset_id_plat IN
-  (SELECT asset_id_plat FROM gps_proj_assets WHERE proj_id_plat = '1487009051605323');
-UPDATE fb_insights SET proj_id_plat = '1487009051605323' WHERE stats_type = 'DailyDiff' AND asset_id_plat IN
-  (SELECT asset_id_plat FROM gps_proj_assets WHERE proj_id_plat = '1487009051605323');
 */
 
 
@@ -452,8 +419,6 @@ COPY fb_insights(end_time, id, title, name, value, proj_id, proj_status, obj_typ
 -- select end_time, sys_time, value FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Daily Reactions by type') AND sys_time < (CURRENT_DATE-2) AND sys_time > (CURRENT_DATE-3) AND id LIKE '2054005264823683%';
 -- update fb_insights set asset_id_plat = split_part(id, '/', 1) where (stats_type = 'VideoInsights' or stats_type = 'DailyDiff');
 
---insert into gps_proj_assets
--- select distinct(id) as asset_id_plat, 'facebook' as plat_id, '1495821923975356' as proj_id_plat, 'active' as proj_status, 'published' as asset_status, 'Video' as obj_type, 'Lifetime,DailyDiff' as stats_type, CURRENT_DATE as sys_time from fb_insights where obj_type = 'Video';
 
 ----#########################
 ----######## CSST enhancement
@@ -506,54 +471,103 @@ SELECT ((SELECT sum FROM total_reactions) + (SELECT sum FROM total_share_comment
 -- ###### Top10 ids
 -- SELECT asset_id_plat, SUM(value) FROM top10_heatmap WHERE proj_id_plat LIKE '612330242258452' GROUP BY asset_id_plat ORDER BY SUM(value) DESC;
 
--- ########## Trends
+
 /*
-DROP VIEW IF EXISTS seven_day_views_delta_1495821923975356;
-CREATE VIEW seven_day_views_delta_1495821923975356 AS
-SELECT 'seven-day-views today' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views' AND proj_id_plat LIKE '1495821923975356' AND end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE)
+DROP VIEW IF EXISTS top10_heatmap_612330242258452;
+CREATE VIEW top10_heatmap_612330242258452 AS SELECT asset_id_plat, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff'
+  AND title LIKE '%Unique 10-Second Views%' AND sys_time < CURRENT_DATE and sys_time > CURRENT_DATE-8 AND asset_id_plat IN
+  (SELECT asset_id_plat FROM fb_insights WHERE stats_type = 'DailyDiff' AND proj_id_plat LIKE '612330242258452' AND title LIKE '%Unique 10-Second Views%'
+  AND sys_time < CURRENT_DATE AND sys_time > CURRENT_DATE-8 GROUP BY asset_id_plat ORDER BY SUM(value) DESC LIMIT 10)  ORDER BY asset_id_plat;
+
+*/
+
+-- SELECT sum(value) FROM fb_insights WHERE stats_type = 'DailyDiff' and proj_id_plat LIKE '612330242258452'
+--  AND title LIKE '%Unique 10-Second Views%' AND sys_time like '%2016-09-17%';
+
+-- ###### Top10 ids
+-- SELECT asset_id_plat, SUM(value) FROM top10_heatmap_612330242258452 GROUP BY asset_id_plat ORDER BY SUM(value) DESC;
+
+-- ###### Top10-heatmap
+-- SELECT * FROM top10_heatmap_612330242258452;
+
+-- ###### Trends
+/*
+DROP VIEW IF EXISTS seven_day_reach_delta_612330242258452;
+CREATE VIEW seven_day_reach_delta_612330242258452 AS
+  SELECT 'seven-day-reach today' AS name, SUM(value) AS sum FROM fb_insights
+  WHERE stats_type = 'Insights' AND title = 'Daily Total Reach' AND proj_id_plat LIKE '612330242258452' AND end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) UNION ALL
+  SELECT 'seven-day-reach yesterday' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights'
+  AND title = 'Daily Total Reach' AND proj_id_plat LIKE '612330242258452' AND end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1);
+
+DROP VIEW IF EXISTS seven_day_views_delta_612330242258452;
+CREATE VIEW seven_day_views_delta_612330242258452 AS
+SELECT 'seven-day-views today' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views' AND proj_id_plat LIKE '612330242258452' AND end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE)
 UNION ALL
-SELECT 'seven-day-views yesterday' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views' AND proj_id_plat LIKE '1495821923975356' AND end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1);
+SELECT 'seven-day-views yesterday' AS name, SUM(value) AS sum FROM fb_insights WHERE stats_type = 'Insights' AND title LIKE 'Daily Total Video Views' AND proj_id_plat LIKE '612330242258452' AND end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1);
 
 -- ## Separate Trends APIs: avg view time
-DROP VIEW IF EXISTS seven_day_view_time_delta_1495821923975356;
-CREATE VIEW seven_day_view_time_delta_1495821923975356 AS
-SELECT 'seven-day-view-time today' AS name, CONVERT(int,SUM(value)/7000) AS sum FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE '%Total Video View Time%') AND proj_id_plat LIKE '1495821923975356' AND sys_time > (CURRENT_DATE-7) AND sys_time < (CURRENT_DATE)
+DROP VIEW IF EXISTS seven_day_view_time_delta_612330242258452;
+CREATE VIEW seven_day_view_time_delta_612330242258452 AS
+SELECT 'seven-day-view-time today' AS name, CONVERT(int,SUM(value)/7000) AS sum FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE '%Total Video View Time%') AND proj_id_plat LIKE '612330242258452' AND sys_time > (CURRENT_DATE-7) AND sys_time < (CURRENT_DATE)
 UNION ALL
-SELECT 'seven-day-view-time yesterday' AS name, CONVERT(int,SUM(value)/7000) AS sum FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE '%Total Video View Time%') AND proj_id_plat LIKE '1495821923975356' AND sys_time > (CURRENT_DATE-8) AND sys_time < (CURRENT_DATE-1);
+SELECT 'seven-day-view-time yesterday' AS name, CONVERT(int,SUM(value)/7000) AS sum FROM fb_insights WHERE stats_type = 'DailyDiff' AND (title LIKE '%Total Video View Time%') AND proj_id_plat LIKE '612330242258452' AND sys_time > (CURRENT_DATE-8) AND sys_time < (CURRENT_DATE-1);
 
 -- ## Separate Trends APIs: actions
-DROP VIEW IF EXISTS seven_day_unique_share_today_1495821923975356;
-create view seven_day_unique_share_today_1495821923975356 as
-select 'seven_day_unique_share today' as name, sum(json_extract_path_text(value, 'share')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '1495821923975356' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_admin_num_posts_by_type%' and json_extract_path_text(value, 'share') <> ''
+DROP VIEW IF EXISTS seven_day_unique_share_today_612330242258452;
+create view seven_day_unique_share_today_612330242258452 as
+select 'seven_day_unique_share today' as name, sum(json_extract_path_text(value, 'share')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '612330242258452' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_admin_num_posts_by_type%' and json_extract_path_text(value, 'share') <> ''
 union all
-select 'seven_day_unique_like today' as name, sum(json_extract_path_text(value, 'like')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '1495821923975356' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'like') <> ''
+select 'seven_day_unique_like today' as name, sum(json_extract_path_text(value, 'like')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '612330242258452' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'like') <> ''
 union all
-select 'seven_day_unique_comment today' as name, sum(json_extract_path_text(value, 'comment')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '1495821923975356' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'comment') <> '';
+select 'seven_day_unique_comment today' as name, sum(json_extract_path_text(value, 'comment')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '612330242258452' and end_time > (CURRENT_DATE-7) AND end_time < (CURRENT_DATE) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'comment') <> '';
 
-DROP VIEW IF EXISTS seven_day_unique_share_yesterday_1495821923975356;
-create view seven_day_unique_share_yesterday_1495821923975356 as
-select 'seven_day_unique_share yesterday' as name, sum(json_extract_path_text(value, 'share')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '1495821923975356' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_admin_num_posts_by_type%' and json_extract_path_text(value, 'share') <> ''
+DROP VIEW IF EXISTS seven_day_unique_share_yesterday_612330242258452;
+create view seven_day_unique_share_yesterday_612330242258452 as
+select 'seven_day_unique_share yesterday' as name, sum(json_extract_path_text(value, 'share')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '612330242258452' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_admin_num_posts_by_type%' and json_extract_path_text(value, 'share') <> ''
 union all
-select 'seven_day_unique_like yesterday' as name, sum(json_extract_path_text(value, 'like')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '1495821923975356' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'like') <> ''
+select 'seven_day_unique_like yesterday' as name, sum(json_extract_path_text(value, 'like')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '612330242258452' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'like') <> ''
 union all
-select 'seven_day_unique_comment yesterday' as name, sum(json_extract_path_text(value, 'comment')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '1495821923975356' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'comment') <> '';
+select 'seven_day_unique_comment yesterday' as name, sum(json_extract_path_text(value, 'comment')) as sum from fb_insights where stats_type = 'Insights' AND proj_id_plat LIKE '612330242258452' and end_time > (CURRENT_DATE-8) AND end_time < (CURRENT_DATE-1) and name like '%page_positive_feedback_by_type_unique%' and json_extract_path_text(value, 'comment') <> '';
 
-DROP VIEW IF EXISTS seven_day_unique_actions_delta_1495821923975356;
-create view seven_day_unique_actions_delta_1495821923975356 as
-select * from seven_day_unique_share_today_1495821923975356
+DROP VIEW IF EXISTS seven_day_unique_actions_delta_612330242258452;
+create view seven_day_unique_actions_delta_612330242258452 as
+select * from seven_day_unique_share_today_612330242258452
 union all
-select * from seven_day_unique_share_yesterday_1495821923975356;
+select * from seven_day_unique_share_yesterday_612330242258452;
 
-DROP VIEW IF EXISTS seven_day_trends_data_1495821923975356;
-CREATE VIEW seven_day_trends_data_1495821923975356 AS
-select * from seven_day_reach_delta_1495821923975356
+DROP VIEW IF EXISTS seven_day_trends_data_612330242258452;
+CREATE VIEW seven_day_trends_data_612330242258452 AS
+select * from seven_day_reach_delta_612330242258452
 union all
-select * from seven_day_views_delta_1495821923975356
+select * from seven_day_views_delta_612330242258452
 union all
-select * from seven_day_view_time_delta_1495821923975356
+select * from seven_day_view_time_delta_612330242258452
 union all
-select * from seven_day_unique_actions_delta_1495821923975356 order by name;
+select * from seven_day_unique_actions_delta_612330242258452 order by name;
 */
+
+--- ###### action/reaction
+/*
+DROP VIEW IF EXISTS total_reactions_612330242258452;
+CREATE VIEW total_reactions_612330242258452 AS
+SELECT 'total reactions' AS name, SUM( CONVERT(int, json_extract_path_text(value, 'love')) +
+  CONVERT(int, json_extract_path_text(value, 'haha')) + CONVERT(int, json_extract_path_text(value, 'like')) +
+  CONVERT(int, json_extract_path_text(value, 'sorry'))  +
+  CONVERT(int, json_extract_path_text(value, 'anger'))  +
+  CONVERT(int, json_extract_path_text(value, 'wow')) )
+  AS sum FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Reactions by type') AND proj_id_plat LIKE '612330242258452' AND sys_time >= (CURRENT_DATE-2) GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;
+
+DROP VIEW IF EXISTS total_share_comments_612330242258452;
+CREATE VIEW total_share_comments_612330242258452 AS
+SELECT 'total share and comments' AS name, SUM( nullif(json_extract_path_text(value, 'share'), ' ')::int + nullif(json_extract_path_text(value, 'comment'), ' ')::int ) AS sum
+FROM fb_insights WHERE stats_type = 'VideoInsights' AND (title LIKE 'Lifetime Video Stories by action type') AND proj_id_plat LIKE '612330242258452' AND sys_time >= (CURRENT_DATE-2) GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;
+*/
+
+
+
+-------- 1487009051605323
+-------- 1495821923975356
+-------- 612330242258452
 
 --- ############ Action reaction
 
