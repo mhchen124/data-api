@@ -48,7 +48,7 @@ case class Stats(description: String,
                  value: String) extends Serializable {
 
     	override def toString = "{" +
-            """"sys_time":"""" + sys_time +
+            """"description":"""" + description +
             """","title":"""" + title +
             """","name":"""" + name  +
             """","id":"""" + id +
@@ -58,8 +58,37 @@ case class Stats(description: String,
             """","obj_type":"""" + obj_type +
             """","period":"""" + period +
             """","stats_type":"""" + stats_type +
+            """"sys_time":"""" + sys_time +
             """","old_value:":""" + old_value +
             ""","new_value":""" + new_value +
+            ""","value":""" + value + "}"
+}
+
+case class Stats1Value(description: String,
+                 title: String,
+                 name: String,
+                 id: String,
+                 plat_id: String,
+                 proj_id_plat: String,
+                 asset_id_plat: String,
+                 obj_type: String,
+                 period: String,
+                 stats_type: String,
+                 sys_time: String,
+                 value: String) extends Serializable {
+
+        override def toString = "{" +
+            """"description":"""" + description +
+            """","title":"""" + title +
+            """","name":"""" + name  +
+            """","id":"""" + id +
+            """","plat_id":"""" + plat_id +
+            """","proj_id_plat":"""" + proj_id_plat +
+            """","asset_id_plat":"""" + asset_id_plat +
+            """","obj_type":"""" + obj_type +
+            """","period":"""" + period +
+            """","stats_type":"""" + stats_type +
+            """"sys_time":"""" + sys_time +
             ""","value":""" + value + "}"
 
 }
