@@ -188,8 +188,11 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
         val idList:Array[String] = vids.split(",").map(x => "'" + x + "'")
         val InCondition:String = idList.mkString(",")
         val queryResult = StaticQuery[KeyLongValuePair] +
-            "SELECT asset_id_plat, SUM(value) FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Average time video viewed' AND sys_time > '" +
-            start + "' AND sys_time < '" + stop + "' AND asset_id_plat IN (" + InCondition + ") GROUP BY asset_id_plat;"
+//            "SELECT asset_id_plat, SUM(value) FROM fb_insights WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Average time video viewed' AND sys_time > '" +
+//            start + "' AND sys_time < '" + stop + "' AND asset_id_plat IN (" + InCondition + ") GROUP BY asset_id_plat;"
+            "WITH ld AS (SELECT asset_id_plat, max(sys_time) AS latest FROM fb_insights where stats_type = 'VideoInsights' GROUP BY asset_id_plat) " +
+            "SELECT s.asset_id_plat, s.value FROM fb_insights s JOIN ld ON ld.asset_id_plat = s.asset_id_plat " +
+            "WHERE s.sys_time = ld.latest AND s.stats_type = 'VideoInsights' AND s.title LIKE 'Lifetime Average time video viewed' AND s.asset_id_plat IN (" + InCondition + ");"
         queryResult.list
     }
     def queryDailyActionTypesDateRangeBatch(implicit session: Session, vids: String, start: String, stop: String) : String = {
