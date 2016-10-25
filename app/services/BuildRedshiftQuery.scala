@@ -50,7 +50,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryTotalReach(implicit session: Session, projID: Long) : String = {
         val numberFromQuery = StaticQuery[StatLong] + "SELECT SUM(value) AS sum FROM fb_insights " +
-            "WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Video Total Reach' " +
+            "WHERE stats_type = 'VideoInsights' AND title LIKE 'Lifetime Post Total Reach' " +
             "AND proj_id_plat LIKE '" + projID.toString + "' AND sys_time >= (CURRENT_DATE-2) GROUP BY sys_time ORDER BY sys_time DESC LIMIT 1;"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }
@@ -116,7 +116,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
 
     def queryDailyVideoReachDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
         val queryResult = StaticQuery[IdTitleValueTime] +
-            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time > '" +
+            "SELECT asset_id_plat, title, value, sys_time FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Post Total Reach' AND sys_time > '" +
             start + "' AND sys_time < '" + stop + "' AND asset_id_plat LIKE '" + vid.toString + "%';"
         Json.toJson(queryResult.list).toString()
     }
@@ -161,7 +161,7 @@ trait BuildRedshiftQuery { this: PlainSqlRedshift =>
     }
     def queryVideoReachDateRange(implicit session: Session, vid: Long, start: String, stop: String) : String = {
         val numberFromQuery = StaticQuery[StatLong] +
-            "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Video Total Reach' AND sys_time > '" +
+            "SELECT SUM(value) FROM fb_insights WHERE stats_type = 'DailyDiff' AND title LIKE 'Daily Post Total Reach' AND sys_time > '" +
             start + "' AND sys_time < '" + stop + "' AND asset_id_plat LIKE '" + vid.toString + "%';"
         Json.prettyPrint(Json.arr(Json.obj("count" -> numberFromQuery.first.statNumber)))
     }

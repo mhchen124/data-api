@@ -7,7 +7,7 @@ val testplus = "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 
 lazy val commonSettings = Seq(
 	organization := "com.fresno",
-	version := "2.1-SNAPSHOT",
+	version := "2.2-SNAPSHOT",
 	scalaVersion := "2.11.7"
 )
 
